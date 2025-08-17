@@ -3,6 +3,7 @@ import { ModeHandlerMap } from '../mode/modeHandlerMap';
 import { executeTransformations } from '../transformations/execute';
 import { Logger } from '../util/logger';
 import { StatusBar } from '../statusBar';
+import { IBufferTransformer } from './types';
 
 /**
  * Represents a buffer transformation operation
@@ -23,7 +24,7 @@ export type BufferTransformationRequest = BufferMacroTransformation; // Add othe
  * Implementation of buffer transformation operations
  * Handles the actual execution of operations across multiple buffers
  */
-export class BufferTransformationExecutor {
+export class BufferTransformationImpl implements IBufferTransformer {
   async execute(transformation: BufferTransformationRequest): Promise<void> {
     switch (transformation.type) {
       case 'macro':
