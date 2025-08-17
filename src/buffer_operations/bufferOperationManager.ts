@@ -3,6 +3,7 @@ import { Logger } from '../util/logger';
 import { BufferServiceRegistry } from './di/bufferServiceRegistry';
 import { BufferMacroTransformation, IBufferTransformer } from './types';
 import { VimState } from '../state/vimState';
+import { getReferencesUnderCursor } from './bufferUtils';
 
 export class BufferOperationManager {
   private readonly bufferTransformer: IBufferTransformer;
@@ -12,8 +13,34 @@ export class BufferOperationManager {
     this.bufferTransformer = BufferServiceRegistry.get('BufferTransformer')!;
   }
 
+  async executeRefdo(register: string, continueOnError: boolean): Promise<void> {
+    const references = await getReferencesUnderCursor();
+    const activeEditor = vscode.window.activeTextEditor?.document.uri;
+
+    const targetBuffers = Array.from(
+      new Set(references.map((el) => el.uri.fsPath).filter((el) => el !== activeEditor?.fsPath)),
+    ).map((el) => vscode.Uri.file(el));
+
+    if (targetBuffers.length === 0) {
+      Logger.info('No target buffers found for refdo');
+      return;
+    }
+
+    Logger.info(`executeRefdo: Found ${targetBuffers.length} target buffers`);
+
+    // Create transformation request and execute it
+    const transformationRequest: BufferMacroTransformation = {
+      type: 'macro',
+      register,
+      continueOnError,
+      targetBuffers,
+    };
+
+    await this.bufferTransformer.execute(transformationRequest);
+  }
+
   async executeBufdo(register: string, continueOnError: boolean): Promise<void> {
-    // Gather all target buffers for argdo (all open tabs)
+    // Gather all target buffers for bufdo (all open tabs)
     const allTabs = vscode.window.tabGroups.all.flatMap((group) => group.tabs);
     const targetBuffers = allTabs
       .filter((tab) => tab.input instanceof vscode.TabInputText)

@@ -49,7 +49,6 @@ export class BufferTransformationImpl implements IBufferTransformer {
 
     for (const bufferUri of targetBuffers) {
       try {
-        // Switch to the target buffer
         await vscode.window.showTextDocument(bufferUri);
 
         const activeEditor = vscode.window.activeTextEditor;
@@ -58,12 +57,9 @@ export class BufferTransformationImpl implements IBufferTransformer {
           continue;
         }
 
-        // Get the ModeHandler for this buffer
         const [modeHandler] = await ModeHandlerMap.getOrCreate(activeEditor);
-        if (!modeHandler) {
-          Logger.warn(`No ModeHandler found for buffer: ${bufferUri.toString()}`);
-          continue;
-        }
+        modeHandler.vimState.editor = activeEditor;
+        modeHandler.syncCursors();
 
         await executeTransformations(modeHandler, [
           {
