@@ -17,6 +17,7 @@ import { RegisterMode } from './../register/register';
 import { ReplaceState } from './../state/replaceState';
 import { globalState } from './globalState';
 import { RecordedState } from './recordedState';
+import { BufferOperationManager } from '../buffer_operations/bufferOperationManager';
 
 interface IInputMethodSwitcher {
   switchInputMethod(prevMode: Mode, newMode: Mode): Promise<void>;
@@ -58,6 +59,8 @@ export class VimState implements vscode.Disposable {
   public desiredColumn = 0;
 
   public historyTracker: HistoryTracker;
+
+  public bufferOperationManager: BufferOperationManager;
 
   public easyMotion: IEasyMotion;
 
@@ -311,6 +314,7 @@ export class VimState implements vscode.Disposable {
     this.editor = editor;
     this.documentUri = editor?.document.uri ?? vscode.Uri.file(''); // TODO: this is needed for some badly written tests
     this.historyTracker = new HistoryTracker(this);
+    this.bufferOperationManager = new BufferOperationManager(this);
     this.easyMotion = easyMotion;
   }
 
