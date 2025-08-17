@@ -17,6 +17,7 @@ import { Logger } from './src/util/logger';
 import { SpecialKeys } from './src/util/specialKeys';
 import { VSCodeContext } from './src/util/vscodeContext';
 import { exCommandParser } from './src/vimscript/exCommandParser';
+import { initializeBufferServices } from './src/buffer_operations/di/initializeBufferServices';
 
 let extensionContext: vscode.ExtensionContext;
 let previousActiveEditorUri: vscode.Uri | undefined;
@@ -115,6 +116,9 @@ export async function activate(context: vscode.ExtensionContext, handleLocal: bo
     const filepathComponents = document.fileName.split(/\\|\//);
     Register.setReadonlyRegister('%', filepathComponents.at(-1)!);
   }
+
+  // DI Container to solve circular dependencies
+  initializeBufferServices();
 
   // workspace events
   registerEventListener(
