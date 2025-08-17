@@ -12,7 +12,7 @@ export class BufferOperationManager {
     this.bufferTransformer = BufferServiceRegistry.get('BufferTransformer')!;
   }
 
-  async executeArgdo(register: string, continueOnError: boolean): Promise<void> {
+  async executeBufdo(register: string, continueOnError: boolean): Promise<void> {
     // Gather all target buffers for argdo (all open tabs)
     const allTabs = vscode.window.tabGroups.all.flatMap((group) => group.tabs);
     const targetBuffers = allTabs
@@ -20,11 +20,11 @@ export class BufferOperationManager {
       .map((tab) => (tab.input as vscode.TabInputText).uri);
 
     if (targetBuffers.length === 0) {
-      Logger.info('No target buffers found for argdo');
+      Logger.info('No target buffers found for bufdo');
       return;
     }
 
-    Logger.info(`executeArgdo: Found ${targetBuffers.length} target buffers`);
+    Logger.info(`executeBufdo: Found ${targetBuffers.length} target buffers`);
 
     // Create transformation request and execute it
     const transformationRequest: BufferMacroTransformation = {

@@ -7,23 +7,23 @@ import { ExCommand } from '../../vimscript/exCommand';
 import { Register } from '../../register/register';
 import { bangParser } from '../../vimscript/parserUtils';
 
-interface IArgDoCommandArguments {
+interface IBufDoCommandArguments {
   bang: boolean;
   command: string;
 }
 
 //
-// Implements :argdo
+// Implements :bufdo
 // Executes a command on all open tabs/buffers
 //
-export class ArgDoCommand extends ExCommand {
-  public static readonly argParser: Parser<ArgDoCommand> = bangParser
+export class BufDoCommand extends ExCommand {
+  public static readonly argParser: Parser<BufDoCommand> = bangParser
     .skip(optWhitespace)
-    .chain((bang) => all.map((command) => new ArgDoCommand({ bang, command: command.trim() })));
+    .chain((bang) => all.map((command) => new BufDoCommand({ bang, command: command.trim() })));
 
-  public readonly arguments: IArgDoCommandArguments;
+  public readonly arguments: IBufDoCommandArguments;
 
-  constructor(args: IArgDoCommandArguments) {
+  constructor(args: IBufDoCommandArguments) {
     super();
     this.arguments = args;
   }
@@ -32,7 +32,7 @@ export class ArgDoCommand extends ExCommand {
     const { command, bang } = this.arguments;
 
     if (!command) {
-      StatusBar.setText(vimState, 'argdo: Argument required', true);
+      StatusBar.setText(vimState, 'bufdo: Argument required', true);
       return;
     }
 
@@ -40,7 +40,7 @@ export class ArgDoCommand extends ExCommand {
     if (!command.match(/^@[a-zA-Z0-9]$/)) {
       StatusBar.setText(
         vimState,
-        `argdo: Only macro execution (@register) is supported. Got: ${command}`,
+        `bufdo: Only macro execution (@register) is supported. Got: ${command}`,
         true,
       );
       return;
@@ -49,17 +49,17 @@ export class ArgDoCommand extends ExCommand {
     const register = command.charAt(1).toLowerCase();
 
     if (!Register.isValidRegister(register)) {
-      StatusBar.setText(vimState, `argdo: Invalid register: ${register}`, true);
+      StatusBar.setText(vimState, `bufdo: Invalid register: ${register}`, true);
       return;
     }
 
     if (!Register.has(register)) {
-      StatusBar.setText(vimState, `argdo: Register ${register} is empty`, true);
+      StatusBar.setText(vimState, `bufdo: Register ${register} is empty`, true);
       return;
     }
 
-    await vimState.bufferOperationManager.executeArgdo(register, false);
+    await vimState.bufferOperationManager.executeBufdo(register, false);
 
-    StatusBar.setText(vimState, `argdo: processed macro ${command} for all buffers`);
+    StatusBar.setText(vimState, `bufdo: processed macro ${command} for all buffers`);
   }
 }

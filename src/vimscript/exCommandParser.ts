@@ -1,7 +1,7 @@
 // eslint-disable-next-line id-denylist
 import { all, alt, optWhitespace, Parser, regexp, seq, string, succeed } from 'parsimmon';
 import { AsciiCommand } from '../cmd_line/commands/ascii';
-import { ArgDoCommand } from '../cmd_line/commands/argdo';
+import { BufDoCommand } from '../cmd_line/commands/bufdo';
 import { BangCommand } from '../cmd_line/commands/bang';
 import { Breakpoints } from '../cmd_line/commands/breakpoints';
 import { BufferDeleteCommand } from '../cmd_line/commands/bufferDelete';
@@ -88,7 +88,7 @@ export const builtinExCommands: ReadonlyArray<[[string, string], ArgParser | und
   [['ar', 'gs'], undefined],
   [['arga', 'dd'], undefined],
   [['argd', 'elete'], undefined],
-  [['argdo', ''], ArgDoCommand.argParser],
+  [['argdo', ''], undefined],
   [['arge', 'dit'], undefined],
   [['argg', 'lobal'], undefined],
   [['argl', 'ocal'], undefined],
@@ -117,7 +117,7 @@ export const builtinExCommands: ReadonlyArray<[[string, string], ArgParser | und
   [['breakd', 'el'], Breakpoints.argParsers.del],
   [['breakl', 'ist'], Breakpoints.argParsers.list],
   [['bro', 'wse'], undefined],
-  [['bufdo', ''], undefined],
+  [['bufdo', ''], BufDoCommand.argParser],
   [['buffers', ''], undefined],
   [['bun', 'load'], undefined],
   [['bw', 'ipeout'], undefined],
